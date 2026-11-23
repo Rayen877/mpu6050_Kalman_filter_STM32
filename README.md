@@ -8,10 +8,10 @@ This project reads an MPU6050 (accelerometer + gyroscope) with an STM32 Nucleo-F
 2. **Complementary filter**
 3. **Extended Kalman filter (EKF) on a quaternion**
 
-The three estimates are plotted live (STM Studio), shown side by side on 3D boards (Python), and their CPU cost is measured on the MCU with the Cortex-M4 DWT cycle counter.
+The three estimates are plotted live with Python (matplotlib + pyserial), shown side by side on 3D boards (Python), and their CPU cost is measured on the MCU with the Cortex-M4 DWT cycle counter.
 
 
-<!-- ![Live curves in STM Studio](docs/stm_studio_roll.png)-->
+![Live curves plotted with Python (matplotlib)](docs/kalman_5.png)
 ![3D comparison](docs/33.png)
 
 
