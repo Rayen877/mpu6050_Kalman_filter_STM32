@@ -1,0 +1,6 @@
+../Core/Src/ekf_quat.c:6:13:q_normalize	3
+../Core/Src/ekf_quat.c:30:6:EKF_Init	3
+../Core/Src/ekf_quat.c:42:6:EKF_SetFromAccel	1
+../Core/Src/ekf_quat.c:56:6:EKF_Predict	11
+../Core/Src/ekf_quat.c:101:6:EKF_UpdateAccel	20
+../Core/Src/ekf_quat.c:179:6:EKF_GetEuler	2

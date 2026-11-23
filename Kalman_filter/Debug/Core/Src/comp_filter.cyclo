@@ -1,0 +1,3 @@
+../Core/Src/comp_filter.c:10:6:Comp_Init	1
+../Core/Src/comp_filter.c:16:7:Comp_Update	9
+../Core/Src/comp_filter.c:25:6:Comp_SetAngle	1
