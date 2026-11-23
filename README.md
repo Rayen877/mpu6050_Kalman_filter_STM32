@@ -57,7 +57,7 @@ The EKF takes about **14.6x** more cycles than the complementary filter (6386 vs
 | Board | ST Nucleo-F401RE |
 | Sensor | MPU6050 breakout (GY-521) |
 | IDE | STM32CubeIDE 1.19 (a newer version should open the project, possibly after a migration prompt) |
-| Live plots (optional) | STM Studio, which needs Java 8 JRE |
+| Live plots (optional) | Python 3.9+ with `matplotlib`, `pyserial` |
 | 3D viewer (optional) | Python 3.9+ with `pyvista`, `numpy`, `pyserial` |
 | MATLAB script (optional) | Desktop MATLAB R2019b or later |
 
@@ -83,8 +83,7 @@ The EKF takes about **14.6x** more cycles than the complementary filter (6386 vs
 ## How it works
 
 ```
-MPU6050 --I2C--> STM32F401RE --+--> debug variables (dbg_*) --SWD--> STM Studio (curves + cycles)
-                               +--> CSV over UART ---------------> Python 3D viewer / MATLAB
+MPU6050 --I2C--> STM32F401RE --CSV over UART--> Python live plot / Python 3D viewer / MATLAB
 ```
 
 **Raw accelerometer angles**
@@ -121,21 +120,19 @@ The error is wrapped to the shortest way around the circle, so the roll can cros
 The UART sends one line per sample at 115200 baud:
 
 ```
-accRoll,accPitch,ekfRoll,ekfPitch,compRoll,compPitch
+accRoll,accPitch,ekfRoll,ekfPitch,compRoll,compPitch,cycAcc,cycEkf,cycComp
 ```
 
-### 2. Live curves and CPU cycles with STM Studio
+### 2. Live curves and CPU cycles with Python (matplotlib)
 
-1. Run the firmware, then stop the CubeIDE debug session (the ST-LINK can only be used by one tool at a time).
-2. In STM Studio: `File > Import Variables`, choose the `.elf` from `firmware/Debug/`, and filter with `dbg_`.
-3. Send the variables to viewers (right click, `Send To`), then press the green arrow.
+```bash
+pip install -U matplotlib pyserial
+python tools/imu_viewer.py
+```
 
-| Variable | Meaning |
-|---|---|
-| `dbg_accRoll`, `dbg_accPitch` | raw accelerometer angles (deg) |
-| `dbg_compRoll`, `dbg_compPitch` | complementary filter (deg) |
-| `dbg_ekfRoll`, `dbg_ekfPitch`, `dbg_ekfYaw` | EKF angles (deg, yaw drifts) |
-| `dbg_cyc_acc`, `dbg_cyc_comp`, `dbg_cyc_ekf` | CPU cycles of each block. Complementary total = `dbg_cyc_acc` + `dbg_cyc_comp` (438), EKF total = `dbg_cyc_ekf` (6386) |
+Set `PORT` at the top of the script to your serial port (for example `COM5`). The window shows roll and pitch for the three estimators, and the average CPU cycles of each one at the bottom.
+
+Close PuTTY or any other program that uses the same COM port first.
 
 Cycles are measured around each block with the DWT counter:
 
@@ -190,6 +187,7 @@ angle = Comp_Update(&c, accAngleDeg, gyroRateDps, dt);
 │   ├── Drivers/             STM32 HAL and CMSIS (ST licenses apply)
 │   └── <project>.ioc        CubeMX configuration
 ├── tools/
+│   ├── imu_viewer.py        live matplotlib curves + CPU cycles
 │   ├── viewer3d_pro.py      3D comparison (has a demo mode)
 │   └── plot_filters.m       MATLAB live plot + noise statistics
 ├── docs/                screenshots
