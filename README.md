@@ -29,20 +29,19 @@ Observed on the live curves, with the board resting on the table and while tappi
 
 ### CPU cost (STM32F401RE @ 84 MHz, measured with `DWT->CYCCNT`)
 
-| Estimator | Cycles | Time | Share of the 10 ms loop | Breakdown |
-|---|---:|---:|---:|---|
-| Raw accelerometer | 312 | 3.7 µs | 0.037 % | `atan2f`, `atanf`, `sqrtf` |
-| **Complementary filter** | **438** | 5.2 µs | 0.052 % | 312 (raw accelerometer angles, its input) + 126 (filter update) |
-| **EKF (quaternion)** | **6386** | 76.0 µs | 0.76 % | predict + update + quaternion to Euler (works on the accelerometer vector directly, no raw angles needed) |
+| Estimator | Cycles | Time | Share of the 10 ms loop |
+|---|---:|---:|---:|
+| Raw accelerometer angles | 312 | 3.7 µs | 0.037 % |
+| Complementary filter | 438 | 5.2 µs | 0.052 % |
+| EKF (quaternion) | 6386 | 76.0 µs | 0.76 % |
 
-The complementary filter needs the raw accelerometer angles as its input, so its cost is counted **together with them: 312 + 126 = 438 cycles**. The 126 cycles are only the filter update itself. The EKF takes about **14.6x** more cycles than the complementary filter (6386 vs 438), and still uses **less than 1 %** of the CPU at 100 Hz.
+The EKF takes about **14.6x** more cycles than the complementary filter (6386 vs 438), and still uses **less than 1 %** of the CPU at 100 Hz.
 
 ### Why is the complementary filter so cheap?
 
 - **One state, no matrices.** Per angle it does one gyro integration, one wrapped error and one blend (about ten float operations). `alpha` is a constant, so there is no division and no trigonometry inside the filter.
 - **The EKF carries a 4-state quaternion and a 4x4 covariance matrix.** Every step multiplies several small matrices (`F·P·Fᵀ`, the Kalman gain, the covariance update), inverts a 3x3 matrix, normalizes the quaternion (`sqrtf`) and converts it to Euler angles (`atan2f` twice and `asinf`). That is roughly 450 to 500 multiply-adds plus a few expensive library calls.
 - **Matrix cost grows quickly with the state size** (a 4x4 product is 64 multiply-adds, a 1-state filter needs one).
-- Most of the complementary filter's 438 cycles come from the raw angle computation (312), not from the filter update itself (126), because `atan2f`, `atanf` and `sqrtf` are library calls based on polynomial approximations.
 
 ### Caveats
 
