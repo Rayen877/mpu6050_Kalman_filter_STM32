@@ -10,10 +10,10 @@ This project reads an MPU6050 (accelerometer + gyroscope) with an STM32 Nucleo-F
 
 The three estimates are plotted live (STM Studio), shown side by side on 3D boards (Python), and their CPU cost is measured on the MCU with the Cortex-M4 DWT cycle counter.
 
-<!-- Add screenshots here, for example:
-![Live curves in STM Studio](docs/stm_studio_roll.png)
-![3D comparison](docs/viewer3d.png)
--->
+
+<!-- ![Live curves in STM Studio](docs/stm_studio_roll.png)-->
+![3D comparison](docs/33.png)
+
 
 ## Results
 
