@@ -31,9 +31,9 @@ Observed on the live curves, with the board resting on the table and while tappi
 
 | Estimator | Cycles | Time | Share of the 10 ms loop |
 |---|---:|---:|---:|
-| Raw accelerometer angles | 312 | 3.7 µs | 0.037 % |
-| Complementary filter | 438 | 5.2 µs | 0.052 % |
-| EKF (quaternion) | 6386 | 76.0 µs | 0.76 % |
+| Raw accelerometer angles | 342 | 4.08 µs | 0.037 % |
+| Complementary filter | 484 | 5.77 µs | 0.052 % |
+| EKF (quaternion) | 6400 | 76.19 µs | 0.76 % |
 
 The EKF takes about **14.6x** more cycles than the complementary filter (6386 vs 438), and still uses **less than 1 %** of the CPU at 100 Hz.
 
